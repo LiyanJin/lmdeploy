@@ -3,5 +3,4 @@ transformers
 sentencepiece
 accelerate
 tiktoken
-lmdeploy[all]==0.3.0
 einops==0.7.0
