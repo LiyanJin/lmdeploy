@@ -1,17 +1,23 @@
 import gradio as gr
-from lmdeploy import pipeline, TurbomindEngineConfig
+import os
+import torch
+from transformers import AutoModelForCausalLM, AutoTokenizer, AutoModel
 
+base_path = './lmdeploy'
+os.system(f'git clone https://code.openxlab.org.cn/LiyanJin/lmdeploy.git {base_path}')
+os.system(f'cd {base_path} && git lfs pull')
 
+tokenizer = AutoTokenizer.from_pretrained(base_path,trust_remote_code=True)
+model = AutoModelForCausalLM.from_pretrained(base_path,trust_remote_code=True, torch_dtype=torch.float16).cuda()
 
-# pipe = pipeline('liuhaotian/llava-v1.6-vicuna-7b', backend_config=backend_config) 非开发机运行此命令
-pipe = pipeline('/share/new_models/liuhaotian/llava-v1.6-vicuna-7b', backend_config=backend_config)
+def chat(message,history):
+    for response,history in model.stream_chat(tokenizer,message,history,max_length=2048,top_p=0.7,temperature=1):
+        yield response
 
-def model(image, text):
-    if image is None:
-        return [(text, "请上传一张图片。")]
-    else:
-        response = pipe((text, image)).text
-        return [(text, response)]
+gr.ChatInterface(chat,
+                 title="InternLM2-Chat-7B",
+                description="""
+InternLM2-4bit is mainly developed by jin.  
+                 """,
+                 ).queue(1).launch()
 
-demo = gr.Interface(fn=model, inputs=[gr.Image(type="pil"), gr.Textbox()], outputs=gr.Chatbot())
-demo.launch()   
