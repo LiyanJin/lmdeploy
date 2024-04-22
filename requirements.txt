@@ -4,3 +4,4 @@ sentencepiece
 accelerate
 tiktoken
 einops==0.7.0
+lmdeploy==0.3.0
