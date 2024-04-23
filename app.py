@@ -2,7 +2,7 @@ import gradio as gr
 import os
 import torch
 #from transformers import AutoModelForCausalLM, AutoTokenizer, AutoModel
-from lmdeploy import pipeline, TurbomindEngineConfig
+from lmdeploy import pipeline, TurbomindEngineConfig, GenerationConfig
 
 base_path = './lmdeploy'
 os.system(f'git clone https://code.openxlab.org.cn/LiyanJin/lmdeploy.git {base_path}')
@@ -14,10 +14,11 @@ os.system(f'cd {base_path} && git lfs pull')
 backend_config = TurbomindEngineConfig(cache_max_entry_count=0.2,model_format="awq")
 
 pipe = pipeline(base_path,backend_config=backend_config)
+gen_config = GenerationConfig(top_p=0.8, top_k=40, temperature=0.8, max_new_tokens=1024)
 
 def chat(message,history):
-    for response,history in pipe(message,history):
-        yield response
+    response = pipe(message, gen_config = gen_config)
+    return response.text
 
 gr.ChatInterface(chat,
                  title="InternLM2-Chat-1.8b-4bit",
