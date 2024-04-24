@@ -17,7 +17,7 @@ pipe = pipeline(base_path,backend_config=backend_config)
 gen_config = GenerationConfig(top_p=0.8, top_k=40, temperature=0.8, max_new_tokens=1024)
 
 def chat(message,history):
-    response = pipe(message,lmdeploy,gen_config = gen_config)
+    response = pipe(message, model_name='internlm2-chat-1_8b-4bit', gen_config = gen_config)
     return response.text
 
 gr.ChatInterface(chat,
