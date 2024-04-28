@@ -11,7 +11,8 @@ os.system(f'cd {base_path} && git lfs pull')
 # tokenizer = AutoTokenizer.from_pretrained(base_path,trust_remote_code=True)
 # model = AutoModelForCausalLM.from_pretrained(base_path,trust_remote_code=True,load_in_4bit=True, device_map="auto").cuda()
 
-backend_config = TurbomindEngineConfig(cache_max_entry_count=0.2,model_format="awq")
+# backend_config = TurbomindEngineConfig(cache_max_entry_count=0.2,model_format="awq")
+backend_config = TurbomindEngineConfig(model_format="awq")
 
 pipe = pipeline(base_path, backend_config=backend_config, model_name='internlm2-chat-1_8b-4bit')
 gen_config = GenerationConfig(top_p=0.8, top_k=40, temperature=0.8, max_new_tokens=1024)
